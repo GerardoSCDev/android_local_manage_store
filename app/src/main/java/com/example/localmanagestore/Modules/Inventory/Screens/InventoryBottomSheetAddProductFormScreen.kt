@@ -40,6 +40,17 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -108,6 +119,22 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
                 .padding(bottom = 15.dp),
             style = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold)
         )
+
+        Box(
+            modifier = Modifier
+                .height(120.dp)
+                .fillMaxWidth()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.productos_default_image),
+                contentDescription = stringResource(id = R.string.app_name),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .align(Alignment.Center)
+            )
+        }
 
         AppTextField(
             textValue = barcodeValue,

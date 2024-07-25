@@ -7,7 +7,7 @@ import com.example.localmanagestore.CommonUtils.Utils.Strings.UtilsStrings
 import com.example.localmanagestore.Modules.Inventory.Models.InventoryBottomSheetAddProductFormData
 
 class InventoryBottomSheetAddProductFormViewModel(private val context: Context) {
-    
+
     private val utilsString = UtilsStrings()
     private val database = AppDatabase.getDatabase(context)
     private val productDAO = database.productDao()
