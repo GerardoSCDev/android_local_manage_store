@@ -9,4 +9,9 @@ data class ProductEntity(
     val id: Int = 0,
     val barcode: String,
     val name : String,
+    val stock: Int,
+    val detail: String,
+    val photo: String,
+    val insertAt: String,
+    val updateAt: String,
 )

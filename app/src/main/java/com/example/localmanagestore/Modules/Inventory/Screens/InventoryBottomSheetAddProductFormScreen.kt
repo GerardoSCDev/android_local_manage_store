@@ -55,9 +55,13 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
     val (nameValueHelper, onNameValueHelperChange) = rememberSaveable { mutableStateOf("") }
     val (nameValueIsError, onNameValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
 
-    val (amountValue, onAmountValueChange) = rememberSaveable { mutableStateOf("") }
-    val (amountValueHelper, onAmountValueHelperChange) = rememberSaveable { mutableStateOf("") }
-    val (amountValueIsError, onAmountValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+    val (stockValue, onStockValueChange) = rememberSaveable { mutableStateOf("") }
+    val (stockValueHelper, onStockValueHelperChange) = rememberSaveable { mutableStateOf("") }
+    val (stockValueIsError, onStockValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+
+    val (detailValue, onDetailValueChange) = rememberSaveable { mutableStateOf("") }
+    val (detailValueHelper, onDetailValueHelperChange) = rememberSaveable { mutableStateOf("") }
+    val (detailValueIsError, onDetailValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
 
     val shouldShowDialog = remember { mutableStateOf(false) }
     val modalBottomSheetState = rememberModalBottomSheetState()
@@ -93,7 +97,7 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         onDismissRequest = { onDismiss() },
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        modifier = Modifier.height(420.dp),
+        modifier = Modifier.height(520.dp),
     ) {
 
         Text(
@@ -142,22 +146,33 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         )
 
         AppTextField(
-            textValue = amountValue,
-            onTextValueChange = onAmountValueChange,
-            label = "Monto",
+            textValue = stockValue,
+            onTextValueChange = onStockValueChange,
+            label = "Cantidad",
             rules = listOf(AppTextFieldRules.NOEMPTY),
             keyboardType = KeyboardType.Number,
-            isError = amountValueIsError,
-            onIsErrorChange = onAmountValueIsErrorChange,
-            textHelper = amountValueHelper,
-            onTextHelperChange = onAmountValueHelperChange,
+            isError = stockValueIsError,
+            onIsErrorChange = onStockValueIsErrorChange,
+            textHelper = stockValueHelper,
+            onTextHelperChange = onStockValueHelperChange,
+        )
+
+        AppTextField(
+            textValue = detailValue,
+            onTextValueChange = onDetailValueChange,
+            label = "Detalle",
+            rules = listOf(AppTextFieldRules.NOEMPTY),
+            isError = detailValueIsError,
+            onIsErrorChange = onDetailValueIsErrorChange,
+            textHelper = detailValueHelper,
+            onTextHelperChange = onDetailValueHelperChange,
         )
 
         AppButton(
             title = "Guardar",
-            enabled = !(barcodeValueIsError || nameValueIsError || amountValueIsError),
+            enabled = !(barcodeValueIsError || nameValueIsError || stockValueIsError || detailValueIsError),
             onClick = {
-                viewModel.setFormDataValues(barcodeValue, nameValue, amountValue.toInt())
+                viewModel.setFormDataValues(barcodeValue, nameValue, stockValue.toInt(), detailValue)
                 viewModel.updateStorage {success: Boolean ->
                     shouldShowDialog.value = success
                 }
