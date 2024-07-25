@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -33,7 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.localmanagestore.Modules.Inventory.Screens.InventoryScreen
 import com.example.localmanagestore.Modules.Sales.Screens.SalesScreen
 
-enum class AppScreens { Inventory, Sales }
+enum class AppScreens { Inventory, Sales, Statistic }
 
 data class AppNavItem(
     val title: String,
@@ -44,6 +45,7 @@ data class AppNavItem(
 val listAppNavItems: List<AppNavItem> = listOf(
     AppNavItem(title = "Inventario", icon = Icons.Default.Edit, router = AppScreens.Inventory.name),
     AppNavItem(title = "Ventas", icon = Icons.Default.ShoppingCart, router = AppScreens.Sales.name),
+    AppNavItem(title = "Estadistica", icon = Icons.Default.Info, router = AppScreens.Statistic.name),
 )
 
 @Composable
@@ -94,6 +96,7 @@ fun AppButtonNavBar() {
         ) {
             composable(route = AppScreens.Inventory.name) { InventoryScreen() }
             composable(route = AppScreens.Sales.name) { SalesScreen() }
+            composable(route = AppScreens.Statistic.name) { SalesScreen() }
         }
     }
 }
