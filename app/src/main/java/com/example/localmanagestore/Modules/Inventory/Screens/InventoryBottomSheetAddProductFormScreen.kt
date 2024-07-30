@@ -1,8 +1,10 @@
 package com.example.localmanagestore.Modules.Inventory.Screens
 
 import android.Manifest
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -56,6 +58,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -97,6 +100,12 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
             onBarcodeValueIsErrorChange(!resultValidateRules.isValidate)
         }
     )
+    val bitmapProduct = remember { mutableStateOf<Bitmap?>(null) }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) {
+        bitmapProduct.value = it
+    }
 
     if (isValidatePermissionState) {
         isValidatePermissionState = false
@@ -137,26 +146,40 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(
-                    2.dp,
+                    3.dp,
                     Color(0xFF032030)
                 ),
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(110.dp)
                     .align(Alignment.Center)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.productos_default_image),
-                        contentDescription = stringResource(id = R.string.app_name),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .align(Alignment.Center)
-                    )
+                    bitmapProduct.value?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .align(Alignment.Center)
+                        )
+                    }
+                    if (bitmapProduct.value == null) {
+                        Image(
+                            painter = painterResource(id = R.drawable.productos_default_image),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .align(Alignment.Center)
+                        )
+                    }
+
                     IconButton(
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color(0xFF032030),
@@ -165,7 +188,16 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .size(30.dp),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            if (cameraPermissionState.status.isGranted) {
+
+                                cameraLauncher.launch()
+
+                            } else {
+                                isValidatePermissionState = true
+                                cameraPermissionState.run { launchPermissionRequest() }
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
