@@ -18,8 +18,8 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
 
     }
 
-    fun setFormDataValues(barcode: String, name: String,  amount: Int, detail: String) {
-        formData = InventoryBottomSheetAddProductFormData(barcode, name, amount, detail)
+    fun setFormDataValues(barcode: String, name: String,  amount: Int, detail: String, photoPath: String) {
+        formData = InventoryBottomSheetAddProductFormData(barcode, name, amount, detail, photoPath = photoPath)
     }
 
     fun getAllStorage(callback: (success: Boolean, products: List<ProductEntity>) -> Unit) {
@@ -47,9 +47,10 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
             val name = form.name ?: return
             val stock = form.stock ?: return
             val detail = form.detail ?: return
+            val photoPath = form.photoPath ?: return
             val today = utilsString.getDateCurrentToString()
 
-            val productEntity = ProductEntity(barcode = barcode, name = name, stock = stock, detail = detail, photo = "", updateAt = today, insertAt = today)
+            val productEntity = ProductEntity(barcode = barcode, name = name, stock = stock, detail = detail, photoPath = photoPath, updateAt = today, insertAt = today)
             productDAO.insert(productEntity)
 
             callback(true)

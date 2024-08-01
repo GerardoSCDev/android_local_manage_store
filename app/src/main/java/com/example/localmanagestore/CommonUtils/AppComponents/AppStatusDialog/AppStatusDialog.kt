@@ -29,11 +29,12 @@ import kotlinx.coroutines.delay
 fun AutoDismissDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    message: String = ""
+    message: String = "",
+    isError: Boolean = true
 ) {
 
     val composition by rememberLottieComposition(
-        spec = LottieCompositionSpec.RawRes(R.raw.success_lottie)
+        spec = LottieCompositionSpec.RawRes(if (isError) R.raw.error_lottie else R.raw.success_lottie)
     )
     if (showDialog) {
         Dialog(

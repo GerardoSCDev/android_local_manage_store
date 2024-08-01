@@ -11,7 +11,7 @@ data class ProductEntity(
     val name : String,
     val stock: Int,
     val detail: String,
-    val photo: String,
+    val photoPath: String,
     val insertAt: String,
     val updateAt: String,
 )

@@ -5,4 +5,5 @@ data class InventoryBottomSheetAddProductFormData (
     val name: String? = "",
     val stock: Int? = 0,
     val detail: String? = "",
+    val photoPath: String? = ""
 )

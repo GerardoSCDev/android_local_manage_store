@@ -66,7 +66,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import java.io.File
 import java.io.File.separator
 import java.io.FileOutputStream
@@ -95,6 +94,10 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
     val (detailValueHelper, onDetailValueHelperChange) = rememberSaveable { mutableStateOf("") }
     val (detailValueIsError, onDetailValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
 
+    var photoPath: String = ""
+
+    val isSuccessForm = remember { mutableStateOf(false) }
+
     val shouldShowDialog = remember { mutableStateOf(false) }
     val modalBottomSheetState = rememberModalBottomSheetState()
     val cameraPermissionState: PermissionState = rememberPermissionState(Manifest.permission.CAMERA)
@@ -115,10 +118,6 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         contract = ActivityResultContracts.TakePicturePreview()
     ) {
         bitmapProduct.value = it
-        it?.let {
-            saveImage(it, currentContext)
-        }
-
     }
 
     if (isValidatePermissionState) {
@@ -127,8 +126,9 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
     }
 
     AutoDismissDialog(
+        isError = !isSuccessForm.value,
         showDialog = shouldShowDialog.value,
-        message = "Producto almacenado de forma correcta",
+        message = if (isSuccessForm.value) "Producto almacenado de forma correcta" else "No fue posible almacenar el producto",
         onDismiss = {
             shouldShowDialog.value = false
             onDismiss()
@@ -286,9 +286,15 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
             title = "Guardar",
             enabled = !(barcodeValueIsError || nameValueIsError || stockValueIsError || detailValueIsError),
             onClick = {
-                viewModel.setFormDataValues(barcodeValue, nameValue, stockValue.toInt(), detailValue)
+                val uriPhotoProduct = getUriPhotoProduct(currentContext)
+                photoPath = uriPhotoProduct.toString()
+                viewModel.setFormDataValues(barcodeValue, nameValue, stockValue.toInt(), detailValue, photoPath)
                 viewModel.updateStorage {success: Boolean ->
-                    shouldShowDialog.value = success
+                    if (success) {
+                        bitmapProduct.value?.let { saveImage(it, currentContext, uriPhotoProduct) }
+                    }
+                    isSuccessForm.value = success
+                    shouldShowDialog.value = true
                 }
             }
         )
@@ -318,15 +324,17 @@ fun ShowPermission(cameraPermissionState: PermissionState) {
     }
 }
 
+private fun getUriPhotoProduct(context: Context): Uri? {
+    val values = contentValues()
+    values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + "ProductsImage")
+    values.put(MediaStore.Images.Media.IS_PENDING, true)
+    return context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+}
 /// @param folderName can be your app's name
-private fun saveImage(bitmap: Bitmap, context: Context) {
+private fun saveImage(bitmap: Bitmap, context: Context, uri: Uri?) {
     if (android.os.Build.VERSION.SDK_INT >= 29) {
         val values = contentValues()
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + "ProductsImage")
-        values.put(MediaStore.Images.Media.IS_PENDING, true)
-        // RELATIVE_PATH and IS_PENDING are introduced in API 29.
 
-        val uri: Uri? = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         if (uri != null) {
             saveImageToStream(bitmap, context.contentResolver.openOutputStream(uri))
             values.put(MediaStore.Images.Media.IS_PENDING, false)

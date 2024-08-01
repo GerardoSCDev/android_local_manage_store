@@ -41,8 +41,8 @@ fun ListProductsColum(items: List<ProductEntity>, paddingValues: PaddingValues) 
                     .height(100.dp)
             ) {
                 Row {
-                    ListProductBoxStatus(10)
-                    ListProductBoxImage()
+                    ListProductBoxStatus(item.stock)
+                    ListProductBoxImage(uri = item.photoPath)
                     ListProductBoxDescription(item)
                 }
             }

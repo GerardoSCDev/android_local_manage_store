@@ -17,7 +17,8 @@ fun ListProductBoxDescription(product: ProductEntity) {
         modifier = Modifier.padding(15.dp)
     ) {
         Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-        Text(text = "Cantidad: ${10}")
+        Text(text = "Cantidad: ${product.stock}")
         Text(text = "Código: ${product.barcode}")
+        Text(text = "Descripción: ${product.detail}")
     }
 }
