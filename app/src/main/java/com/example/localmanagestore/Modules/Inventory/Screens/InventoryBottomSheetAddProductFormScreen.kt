@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -77,6 +78,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.core.net.toUri
+import coil.compose.rememberAsyncImagePainter
 import com.example.localmanagestore.CommonUtils.RoomDB.Entities.ProductEntity
 import java.io.File
 import java.io.File.separator
@@ -195,15 +197,27 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                         )
                     }
                     if (bitmapProduct.value == null) {
-                        Image(
-                            painter = painterResource(id = R.drawable.productos_default_image),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .align(Alignment.Center)
-                        )
+                        product?.photoPath?.let {
+                            Image(
+                                painter = rememberAsyncImagePainter(model = it),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .align(Alignment.Center)
+                            )
+                        } ?: run {
+                            Image(
+                                painter = painterResource(id = R.drawable.productos_default_image),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .align(Alignment.Center)
+                            )
+                        }
                     }
 
                     IconButton(
