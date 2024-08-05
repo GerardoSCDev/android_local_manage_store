@@ -112,6 +112,7 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
     var photoPath: String = ""
 
     val isSuccessForm = remember { mutableStateOf(false) }
+    val dialogMessage = remember { mutableStateOf("") }
 
     val shouldShowDialog = remember { mutableStateOf(false) }
     val modalBottomSheetState = rememberModalBottomSheetState()
@@ -143,7 +144,7 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
     AutoDismissDialog(
         isError = !isSuccessForm.value,
         showDialog = shouldShowDialog.value,
-        message = if (isSuccessForm.value) "Producto almacenado de forma correcta" else "No fue posible almacenar el producto",
+        message = dialogMessage.value,
         onDismiss = {
             shouldShowDialog.value = false
             onDismiss()
@@ -323,7 +324,11 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     AppButton(
                         type = AppButtonType.Success,
                         title = "Actualizar",
-                        onClick = {}
+                        onClick = {
+                            dialogMessage.value = "Producto actualizado de forma correcta"
+                            isSuccessForm.value = true
+                            shouldShowDialog.value = true
+                        }
                     )
                 }
                 Box(
@@ -335,7 +340,19 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     AppButton(
                         type = AppButtonType.Denie,
                         title = "Borrar",
-                        onClick = {}
+                        onClick = {
+                            product?.let {
+                                viewModel.deleteProduct(product = it) { success ->
+                                    if (success) {
+                                        dialogMessage.value = "Producto eliminado de forma correcta"
+                                    } else {
+                                        dialogMessage.value = "No fue posible eliminar el producto"
+                                    }
+                                    isSuccessForm.value = success
+                                    shouldShowDialog.value = true
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -349,8 +366,12 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     photoPath = uriPhotoProduct.toString()
                     viewModel.setFormDataValues(barcodeValue ?: "", nameValue ?: "", stockValue.toInt(), detailValue ?: "", photoPath)
                     viewModel.updateStorage {success: Boolean ->
+
                         if (success) {
+                            dialogMessage.value = "Producto almacenado de forma correcta"
                             bitmapProduct.value?.let { saveImage(it, currentContext, uriPhotoProduct) }
+                        } else {
+                            dialogMessage.value = "No fue posible almacenar el producto"
                         }
                         isSuccessForm.value = success
                         shouldShowDialog.value = true

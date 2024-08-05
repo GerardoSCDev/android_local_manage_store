@@ -41,7 +41,6 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
 
     fun updateStorage(callback: (success: Boolean) -> Unit) {
         try {
-
             val form = formData ?: return
             val barcode = form.barcode ?: return
             val name = form.name ?: return
@@ -57,6 +56,14 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
         } catch (e: Exception) {
             callback(false)
         }
+    }
 
+    fun deleteProduct( product: ProductEntity, callback: (success: Boolean) -> Unit) {
+        try {
+            productDAO.delete(product)
+            callback(true)
+        } catch (e: Exception) {
+            callback(false)
+        }
     }
 }
