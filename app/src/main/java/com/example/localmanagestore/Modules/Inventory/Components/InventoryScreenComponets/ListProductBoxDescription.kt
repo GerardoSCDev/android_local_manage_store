@@ -14,7 +14,7 @@ import com.example.localmanagestore.Modules.Inventory.Models.ListProductsItemDat
 @Composable
 fun ListProductBoxDescription(product: ProductEntity) {
     Column(
-        modifier = Modifier.padding(15.dp)
+        modifier = Modifier.padding(horizontal = 5.dp, vertical = 10.dp)
     ) {
         Text(text = product.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
         Text(text = "Cantidad: ${product.stock}")

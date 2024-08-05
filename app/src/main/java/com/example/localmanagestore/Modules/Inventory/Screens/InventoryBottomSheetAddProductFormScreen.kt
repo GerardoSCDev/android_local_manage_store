@@ -4,12 +4,15 @@ import android.Manifest
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,7 +52,13 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,12 +69,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.core.net.toUri
+import com.example.localmanagestore.CommonUtils.RoomDB.Entities.ProductEntity
 import java.io.File
 import java.io.File.separator
 import java.io.FileOutputStream
@@ -73,26 +85,26 @@ import java.io.OutputStream
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
+fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, product: ProductEntity? = null, onDismiss: () -> Unit) {
 
     val currentContext = LocalContext.current
     val viewModel = InventoryBottomSheetAddProductFormViewModel(context = LocalContext.current)
 
-    val (barcodeValue, onBarcodeValueChange) = rememberSaveable { mutableStateOf("") }
+    val (barcodeValue, onBarcodeValueChange) = rememberSaveable { mutableStateOf(product?.barcode) }
     val (barcodeValueHelper, onBarcodeValueHelperChange) = rememberSaveable { mutableStateOf("") }
-    val (barcodeValueIsError, onBarcodeValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+    val (barcodeValueIsError, onBarcodeValueIsErrorChange) = rememberSaveable { mutableStateOf(product?.barcode == "") }
 
-    val (nameValue, onNameValueChange) = rememberSaveable { mutableStateOf("") }
+    val (nameValue, onNameValueChange) = rememberSaveable { mutableStateOf(product?.name) }
     val (nameValueHelper, onNameValueHelperChange) = rememberSaveable { mutableStateOf("") }
-    val (nameValueIsError, onNameValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+    val (nameValueIsError, onNameValueIsErrorChange) = rememberSaveable { mutableStateOf(product?.name == "") }
 
-    val (stockValue, onStockValueChange) = rememberSaveable { mutableStateOf("") }
+    val (stockValue, onStockValueChange) = rememberSaveable { mutableStateOf(product?.stock.toString()) }
     val (stockValueHelper, onStockValueHelperChange) = rememberSaveable { mutableStateOf("") }
-    val (stockValueIsError, onStockValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+    val (stockValueIsError, onStockValueIsErrorChange) = rememberSaveable { mutableStateOf(product?.stock.toString() == "") }
 
-    val (detailValue, onDetailValueChange) = rememberSaveable { mutableStateOf("") }
+    val (detailValue, onDetailValueChange) = rememberSaveable { mutableStateOf(product?.detail) }
     val (detailValueHelper, onDetailValueHelperChange) = rememberSaveable { mutableStateOf("") }
-    val (detailValueIsError, onDetailValueIsErrorChange) = rememberSaveable { mutableStateOf(true) }
+    val (detailValueIsError, onDetailValueIsErrorChange) = rememberSaveable { mutableStateOf(product?.detail == "") }
 
     var photoPath: String = ""
 
@@ -143,7 +155,7 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
     ) {
 
         Text(
-            text = "Nuevo Producto",
+            text = if (isUpdateForm.value) "Actualizar Producto" else "Nuevo Producto",
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -224,7 +236,7 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         }
 
         AppTextField(
-            textValue = barcodeValue,
+            textValue = barcodeValue ?: "",
             onTextValueChange = onBarcodeValueChange,
             textHelper = barcodeValueHelper,
             onTextHelperChange = onBarcodeValueHelperChange,
@@ -249,7 +261,7 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         )
 
         AppTextField(
-            textValue = nameValue,
+            textValue = nameValue ?: "",
             onTextValueChange = onNameValueChange,
             label = "Nombre",
             rules = listOf(AppTextFieldRules.NOEMPTY),
@@ -272,7 +284,7 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
         )
 
         AppTextField(
-            textValue = detailValue,
+            textValue = detailValue ?: "",
             onTextValueChange = onDetailValueChange,
             label = "Detalle",
             rules = listOf(AppTextFieldRules.NOEMPTY),
@@ -282,22 +294,58 @@ fun InventoryBottomSheetAddProductForm(onDismiss: () -> Unit) {
             onTextHelperChange = onDetailValueHelperChange,
         )
 
-        AppButton(
-            title = "Guardar",
-            enabled = !(barcodeValueIsError || nameValueIsError || stockValueIsError || detailValueIsError),
-            onClick = {
-                val uriPhotoProduct = getUriPhotoProduct(currentContext)
-                photoPath = uriPhotoProduct.toString()
-                viewModel.setFormDataValues(barcodeValue, nameValue, stockValue.toInt(), detailValue, photoPath)
-                viewModel.updateStorage {success: Boolean ->
-                    if (success) {
-                        bitmapProduct.value?.let { saveImage(it, currentContext, uriPhotoProduct) }
-                    }
-                    isSuccessForm.value = success
-                    shouldShowDialog.value = true
+        if (isUpdateForm.value) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .weight(1f)
+                ) {
+                    AppButton(
+                        title = "Actualizar",
+                        onClick = {}
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .weight(1f)
+                ) {
+                    AppButton(
+                        title = "Borrar",
+                        onClick = {}
+                    )
                 }
             }
-        )
+
+
+        } else {
+
+            AppButton(
+                title = "Guardar",
+                enabled = !(barcodeValueIsError || nameValueIsError || stockValueIsError || detailValueIsError),
+                onClick = {
+                    val uriPhotoProduct = getUriPhotoProduct(currentContext)
+                    photoPath = uriPhotoProduct.toString()
+                    viewModel.setFormDataValues(barcodeValue ?: "", nameValue ?: "", stockValue.toInt(), detailValue ?: "", photoPath)
+                    viewModel.updateStorage {success: Boolean ->
+                        if (success) {
+                            bitmapProduct.value?.let { saveImage(it, currentContext, uriPhotoProduct) }
+                        }
+                        isSuccessForm.value = success
+                        shouldShowDialog.value = true
+                    }
+                }
+            )
+
+        }
+
+
 
     }
 }

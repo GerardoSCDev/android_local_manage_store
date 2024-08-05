@@ -1,5 +1,8 @@
 package com.example.localmanagestore.Modules.Inventory.Components.InventoryScreenComponets
 
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,13 +15,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.localmanagestore.CommonUtils.RoomDB.Entities.ProductEntity
 import com.example.localmanagestore.Modules.Inventory.Models.ListProductsItemData
 
 @Composable
-fun ListProductsColum(items: List<ProductEntity>, paddingValues: PaddingValues) {
+fun ListProductsColum(items: List<ProductEntity>, paddingValues: PaddingValues, showBottomSheet: MutableState<Boolean>, isUpdateForm: MutableState<Boolean>, productUpdated:  MutableState<ProductEntity>) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -38,9 +43,15 @@ fun ListProductsColum(items: List<ProductEntity>, paddingValues: PaddingValues) 
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(110.dp)
             ) {
-                Row {
+                Row (
+                    modifier = Modifier.clickable {
+                        productUpdated.value = item
+                        isUpdateForm.value = true
+                        showBottomSheet.value = true
+                    }
+                ) {
                     ListProductBoxStatus(item.stock)
                     ListProductBoxImage(uri = item.photoPath)
                     ListProductBoxDescription(item)

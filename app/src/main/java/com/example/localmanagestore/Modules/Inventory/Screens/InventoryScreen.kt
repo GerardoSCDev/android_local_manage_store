@@ -29,6 +29,9 @@ import com.example.localmanagestore.R
 @Composable
 fun InventoryScreen() {
     val showBottomSheet = remember { mutableStateOf(false) }
+    val showUpdateButtomSheet = remember { mutableStateOf(false) }
+    val productUpdated = remember { mutableStateOf<ProductEntity>(ProductEntity(0, "", "", 0, "", "", "", "")) }
+
     val viewModel = InventoryBottomSheetAddProductFormViewModel(context = LocalContext.current)
     val productsList = remember { mutableStateListOf<ProductEntity>() }
 
@@ -38,12 +41,15 @@ fun InventoryScreen() {
     }
 
     Scaffold(
-        topBar = { ListProductTopBar(showBottomSheet = showBottomSheet) }
+        topBar = { ListProductTopBar(showBottomSheet = showBottomSheet, showUpdateForm = showUpdateButtomSheet, productUpdated = productUpdated) }
     ) { paddingValues ->
 
 
         if (showBottomSheet.value) {
-            InventoryBottomSheetAddProductForm {
+            InventoryBottomSheetAddProductForm(
+                isUpdateForm = showUpdateButtomSheet,
+                product = productUpdated.value
+            ) {
                 showBottomSheet.value = false
                 viewModel.getAllStorage { _, products ->
                     productsList -= productsList
@@ -72,7 +78,7 @@ fun InventoryScreen() {
             }
 
         } else {
-            ListProductsColum(items = productsList, paddingValues = paddingValues)
+            ListProductsColum(items = productsList, paddingValues = paddingValues, showBottomSheet = showBottomSheet, isUpdateForm = showUpdateButtomSheet, productUpdated = productUpdated)
         }
 
 
