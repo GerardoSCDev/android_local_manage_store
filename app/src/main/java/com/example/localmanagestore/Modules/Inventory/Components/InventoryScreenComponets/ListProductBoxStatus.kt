@@ -22,7 +22,7 @@ fun ListProductBoxStatus(amount: Int) {
 fun getColorStatus(amount: Int) : Color {
     return if (amount >= 10) {
         Color.Green
-    } else if (amount in 1..8) {
+    } else if (amount in 1..9) {
         Color.Yellow
     } else {
         Color.Red
