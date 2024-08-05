@@ -79,6 +79,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
+import com.example.localmanagestore.CommonUtils.AppComponents.AppButton.AppButtonType
 import com.example.localmanagestore.CommonUtils.RoomDB.Entities.ProductEntity
 import java.io.File
 import java.io.File.separator
@@ -320,6 +321,7 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                         .weight(1f)
                 ) {
                     AppButton(
+                        type = AppButtonType.Success,
                         title = "Actualizar",
                         onClick = {}
                     )
@@ -331,16 +333,15 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                         .weight(1f)
                 ) {
                     AppButton(
+                        type = AppButtonType.Denie,
                         title = "Borrar",
                         onClick = {}
                     )
                 }
             }
-
-
         } else {
-
             AppButton(
+                type = AppButtonType.Success,
                 title = "Guardar",
                 enabled = !(barcodeValueIsError || nameValueIsError || stockValueIsError || detailValueIsError),
                 onClick = {
@@ -356,11 +357,7 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     }
                 }
             )
-
         }
-
-
-
     }
 }
 
