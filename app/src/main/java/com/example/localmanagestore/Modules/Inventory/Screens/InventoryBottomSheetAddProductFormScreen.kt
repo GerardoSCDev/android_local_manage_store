@@ -325,9 +325,23 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                         type = AppButtonType.Success,
                         title = "Actualizar",
                         onClick = {
-                            dialogMessage.value = "Producto actualizado de forma correcta"
-                            isSuccessForm.value = true
-                            shouldShowDialog.value = true
+                            viewModel.setFormDataValues(barcodeValue ?: "",
+                                nameValue ?: "",
+                                stockValue.toInt(),
+                                detailValue ?: "",
+                                photoPath,
+                                product?.insertAt ?: "",
+                                product?.id ?: 0
+                            )
+                            viewModel.updateProduct { success: Boolean ->
+                                if (success) {
+                                    dialogMessage.value = "Producto actualizado de forma correcta"
+                                } else {
+                                    dialogMessage.value = "No fue posible actualizar el producto"
+                                }
+                                isSuccessForm.value = success
+                                shouldShowDialog.value = true
+                            }
                         }
                     )
                 }
@@ -365,7 +379,7 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     val uriPhotoProduct = getUriPhotoProduct(currentContext)
                     photoPath = uriPhotoProduct.toString()
                     viewModel.setFormDataValues(barcodeValue ?: "", nameValue ?: "", stockValue.toInt(), detailValue ?: "", photoPath)
-                    viewModel.updateStorage {success: Boolean ->
+                    viewModel.insertProduct {success: Boolean ->
 
                         if (success) {
                             dialogMessage.value = "Producto almacenado de forma correcta"

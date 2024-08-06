@@ -18,8 +18,8 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
 
     }
 
-    fun setFormDataValues(barcode: String, name: String,  amount: Int, detail: String, photoPath: String) {
-        formData = InventoryBottomSheetAddProductFormData(barcode, name, amount, detail, photoPath = photoPath)
+    fun setFormDataValues(barcode: String, name: String,  amount: Int, detail: String, photoPath: String, insertAt: String = "", id: Int = 0) {
+        formData = InventoryBottomSheetAddProductFormData(id,barcode, name, amount, detail, photoPath, insertAt )
     }
 
     fun getAllStorage(callback: (success: Boolean, products: List<ProductEntity>) -> Unit) {
@@ -39,7 +39,27 @@ class InventoryBottomSheetAddProductFormViewModel(private val context: Context) 
         }
     }
 
-    fun updateStorage(callback: (success: Boolean) -> Unit) {
+    fun updateProduct(callback: (success: Boolean) -> Unit) {
+        try {
+            val form = formData ?: return
+            val id = form.id ?: return
+            val barcode = form.barcode ?: return
+            val name = form.name ?: return
+            val stock = form.stock ?: return
+            val detail = form.detail ?: return
+            val photoPath = form.photoPath ?: return
+            val insertAt = form.insertAt ?: return
+            val today = utilsString.getDateCurrentToString()
+
+            val productEntity = ProductEntity(id = id, barcode = barcode, name = name, stock = stock, detail = detail, photoPath = photoPath, updateAt = today, insertAt = insertAt)
+            productDAO.update(productEntity)
+
+            callback(true)
+        } catch (e: Exception) {
+            callback(false)
+        }
+    }
+    fun insertProduct(callback: (success: Boolean) -> Unit) {
         try {
             val form = formData ?: return
             val barcode = form.barcode ?: return
