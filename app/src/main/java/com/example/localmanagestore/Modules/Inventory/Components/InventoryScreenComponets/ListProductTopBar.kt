@@ -21,7 +21,7 @@ fun ListProductTopBar(showBottomSheet: MutableState<Boolean>, showUpdateForm: Mu
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF032030),
         ),
-        title = { Text(text = AppScreens.Inventory.name, color = Color.White) },
+        title = { Text(text = "Inventario", color = Color.White) },
         actions = {
             IconButton(onClick = {
                 productUpdated.value = ProductEntity(0, "", "", 0, "", "", "", "")
