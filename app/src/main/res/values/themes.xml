@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
+
+        <item name="windowSplashScreenBackground">@color/BlackBlueApp</item>
+        <item name="splashScreenIconSize">150dp</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splas_icon_screen</item>
+        <item name="postSplashScreenTheme">@style/Theme.LocalManageStore</item>
+    </style>
     <style name="Theme.LocalManageStore" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
