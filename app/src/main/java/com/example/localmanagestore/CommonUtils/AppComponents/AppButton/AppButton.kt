@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 enum class AppButtonType {
-    Success, Denie
+    Success, Denie, WhiteButton
 }
 
 @Composable
@@ -27,8 +27,7 @@ fun AppButton(
         enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
-            .padding(horizontal = 10.dp),
+            .height(50.dp),
         colors = getButtonColors(type),
         onClick = onClick
     ) {
@@ -50,6 +49,12 @@ fun getButtonColors(type: AppButtonType) : ButtonColors {
             return ButtonDefaults.buttonColors(
                 contentColor = Color.White,
                 containerColor = Color(0xFF636B6F)
+            )
+        }
+        AppButtonType.WhiteButton -> {
+            return ButtonDefaults.buttonColors(
+                contentColor = Color.Black,
+                containerColor = Color(0xFFFAFAFA)
             )
         }
         else -> {
