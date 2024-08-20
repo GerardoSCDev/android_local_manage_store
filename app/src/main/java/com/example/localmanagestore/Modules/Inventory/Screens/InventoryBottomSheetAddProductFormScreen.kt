@@ -380,7 +380,6 @@ fun InventoryBottomSheetAddProductForm(isUpdateForm: MutableState<Boolean>, prod
                     photoPath = uriPhotoProduct.toString()
                     viewModel.setFormDataValues(barcodeValue ?: "", nameValue ?: "", stockValue.toInt(), detailValue ?: "", photoPath)
                     viewModel.insertProduct {success: Boolean ->
-
                         if (success) {
                             dialogMessage.value = "Producto almacenado de forma correcta"
                             bitmapProduct.value?.let { saveImage(it, currentContext, uriPhotoProduct) }

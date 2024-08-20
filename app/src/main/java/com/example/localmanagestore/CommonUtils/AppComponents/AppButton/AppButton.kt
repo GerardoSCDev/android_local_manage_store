@@ -37,29 +37,31 @@ fun AppButton(
 
 @Composable
 fun getButtonColors(type: AppButtonType) : ButtonColors {
-
     when (type) {
         AppButtonType.Success -> {
             return ButtonDefaults.buttonColors(
                 contentColor = Color.White,
-                containerColor = Color(0xFF032030)
+                containerColor = Color(0xFF032030),
+                disabledContainerColor = Color(0xFFBBBBBB),
+                disabledContentColor = Color.Black
             )
         }
         AppButtonType.Denie -> {
             return ButtonDefaults.buttonColors(
                 contentColor = Color.White,
-                containerColor = Color(0xFF636B6F)
+                containerColor = Color(0xFF636B6F),
+                disabledContainerColor = Color(0xFFBBBBBB),
+                disabledContentColor = Color.Black
             )
         }
         AppButtonType.WhiteButton -> {
             return ButtonDefaults.buttonColors(
                 contentColor = Color.Black,
-                containerColor = Color(0xFFFAFAFA)
+                containerColor = Color(0xFFFAFAFA),
+                disabledContainerColor = Color(0xFFBBBBBB),
+                disabledContentColor = Color.Black
             )
         }
-        else -> {
-            return ButtonDefaults.buttonColors()
-        }
+        else -> return ButtonDefaults.buttonColors()
     }
-
 }

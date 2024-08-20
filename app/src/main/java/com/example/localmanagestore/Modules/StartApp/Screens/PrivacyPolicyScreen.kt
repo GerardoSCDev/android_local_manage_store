@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,9 +14,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +41,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PrivacyPolicyScreen(pagerState: PagerState) {
     val coroutineScope = rememberCoroutineScope()
+    val checkedPrivacy = remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,21 +97,28 @@ fun PrivacyPolicyScreen(pagerState: PagerState) {
 
 
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                AppButton(
-                    type = AppButtonType.WhiteButton,
-                    title = "Aceptar",
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.scrollToPage(2)
-                        }
-                    }
+                Checkbox(
+                    checked = checkedPrivacy.value,
+                    onCheckedChange = { checkedPrivacy.value = it }
+                )
+                Text(
+                    "He leido y acepto la política de privacidad",
+                    color = Color.White
                 )
             }
+            AppButton(
+                type = AppButtonType.WhiteButton,
+                enabled = checkedPrivacy.value,
+                title = "Aceptar",
+                onClick = {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(2)
+                    }
+                }
+            )
         }
     }
 
