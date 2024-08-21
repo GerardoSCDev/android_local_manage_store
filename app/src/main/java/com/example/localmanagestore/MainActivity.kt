@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 //                bottomBar = { AppButtonNavBar() }
                 )
                 {
-                    InventoryScreen()
+                    InventoryScreen(it)
                 }
             }
 

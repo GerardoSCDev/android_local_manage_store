@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Scaffold
@@ -27,7 +28,7 @@ import com.example.localmanagestore.Modules.Inventory.ViewModels.InventoryBottom
 import com.example.localmanagestore.R
 
 @Composable
-fun InventoryScreen() {
+fun InventoryScreen(paddingValues: PaddingValues? = null) {
     val showBottomSheet = remember { mutableStateOf(false) }
     val showUpdateButtomSheet = remember { mutableStateOf(false) }
     val productUpdated = remember { mutableStateOf<ProductEntity>(ProductEntity(0, "", "", 0, "", "", "", "")) }

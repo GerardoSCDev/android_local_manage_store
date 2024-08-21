@@ -22,7 +22,7 @@ fun StartAppScreen () {
 //                bottomBar = { AppButtonNavBar() }
                 )
                 {
-                    InventoryScreen()
+                    InventoryScreen(it)
                 }
             }
             else -> {}
