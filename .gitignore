@@ -21,11 +21,7 @@ out/
 
 # Gradle files
 .gradle/
-build/generated/
-build/intermediates/
-build/kotlin/
-build/shapshot/
-build/tmp/
+build/
 
 # Local configuration file (sdk path, etc)
 local.properties
