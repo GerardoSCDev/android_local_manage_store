@@ -4,8 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.localmanagestore.CommonUtils.Utils.PreferencesManager.PreferencesManager
 import com.example.localmanagestore.Modules.StartApp.Screens.StartAppScreen
+import com.example.localmanagestore.Modules.Inventory.Screens.InventoryScreen
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class)
@@ -13,19 +19,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-//            PrivacyPolicyScreen()
 
-//            WelcomeScreen()
+            val currentContext = LocalContext.current
+            val preferencesManager = remember { PreferencesManager(currentContext) }
+            val isFirstTime = remember { mutableStateOf(preferencesManager.getData("isFirstTimeKey", "true")) }
+            if (isFirstTime.value.toBoolean()) {
+                StartAppScreen()
+            } else {
+                Scaffold (
+//                bottomBar = { AppButtonNavBar() }
+                )
+                {
+                    InventoryScreen()
+                }
+            }
 
-
-            StartAppScreen()
-
-//            Scaffold (
-////                bottomBar = { AppButtonNavBar() }
-//            )
-//            {
-//                InventoryScreen()
-//            }
         }
     }
 }

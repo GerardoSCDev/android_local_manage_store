@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.localmanagestore.CommonUtils.AppComponents.AppButton.AppButton
 import com.example.localmanagestore.CommonUtils.AppComponents.AppButton.AppButtonType
+import com.example.localmanagestore.CommonUtils.Utils.PreferencesManager.PreferencesManager
 import com.example.localmanagestore.modalPrivacyStrings
 import com.example.localmanagestore.privacyIndex
 import kotlinx.coroutines.launch
@@ -40,8 +42,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PrivacyPolicyScreen(pagerState: PagerState) {
+    val currentContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val checkedPrivacy = remember { mutableStateOf(false) }
+    val preferencesManager = remember { PreferencesManager(currentContext) }
 
     Box(
         modifier = Modifier
@@ -64,7 +68,6 @@ fun PrivacyPolicyScreen(pagerState: PagerState) {
                     .wrapContentHeight(align = Alignment.CenterVertically),
                 style = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold, color = Color.White)
             )
-
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,13 +92,7 @@ fun PrivacyPolicyScreen(pagerState: PagerState) {
 
                         }
                     }
-
-
-
                 }
-
-
-
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -114,6 +111,7 @@ fun PrivacyPolicyScreen(pagerState: PagerState) {
                 enabled = checkedPrivacy.value,
                 title = "Aceptar",
                 onClick = {
+                    preferencesManager.saveData("isFirstTimeKey", "false")
                     coroutineScope.launch {
                         pagerState.scrollToPage(2)
                     }
